@@ -56,8 +56,8 @@ window.BLEDevice.prototype.render = function() {
 window.BLEDevice.prototype.rerender = function() {
   if (this.connected) {
     this.el.innerHTML = `
-      <p>BLE, services: [${this.services.map(s => s.getUUID()).join(', ')}]</p>
-      <p>Connected</p>
+      <p class="ble-header">BLE, services: [${this.services.map(s => s.getUUID()).join(', ')}]</p>
+      <p class="ble-status">Connected</p>
       <p>Services</p>
       <div style='padding-left: 20px;' class='services'></div>
       <p><button class="disconnect">Disconnect</button>
@@ -77,14 +77,14 @@ window.BLEDevice.prototype.rerender = function() {
   }
   else if (!this.advertising && !this.connected) {
     this.el.innerHTML = `
-      <p>BLE, services: [${this.services.map(s => s.getUUID()).join(', ')}]</p>
-      <p>Not advertising...</p>
+      <p class="ble-header">BLE, services: [${this.services.map(s => s.getUUID()).join(', ')}]</p>
+      <p class="ble-status">Not advertising...</p>
     `;
   }
   else if (this.advertising && !this.connected) {
     this.el.innerHTML = `
-      <p>BLE, services: [${this.services.map(s => s.getUUID()).join(', ')}]</p>
-      <p>Advertising...</p>
+      <p class="ble-header">BLE, services: [${this.services.map(s => s.getUUID()).join(', ')}]</p>
+      <p class="ble-status">Advertising...</p>
       <p>
         Name = ${this.advName}<br>
         UUIDs = [${this.advUuids.join(', ')}]<br>

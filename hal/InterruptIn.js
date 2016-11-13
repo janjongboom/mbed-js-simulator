@@ -18,8 +18,8 @@ window.InterruptIn.prototype.rise = function(callback) {
 window.InterruptIn.prototype.render = function() {
   var el = this.el = document.createElement('div');
   el.innerHTML = `
-    <div class="description"></div>
-    <div class="buttons"></div>
+    <p class="description"></p>
+    <p class="buttons"></p>
   `;
   
   var fallBtn = document.createElement('button');

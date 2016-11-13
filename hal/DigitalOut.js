@@ -5,6 +5,8 @@ window.DigitalOut = function(pin, defaultValue) {
   this.value = defaultValue || 0;
   this.is_connected = () => true;
 
+  this.localStorageDisplayKey = 'do-' + pin + '-displaymode';
+
   window.addComponent(this);
 };
 
@@ -25,7 +27,7 @@ window.DigitalOut.prototype.render = function() {
 
   el.innerHTML = `
     <p><select class="displaymode">
-      <option selected>Raw value</option>
+      <option>Raw value</option>
       <option>LED</option>
       <option>LED Inverted</option>
     </select></p>
@@ -34,12 +36,16 @@ window.DigitalOut.prototype.render = function() {
 
   el.querySelector('.displaymode').onchange = e => {
     this.displayMode = e.target.value;
+
+    localStorage.setItem(this.localStorageDisplayKey, this.displayMode);
+
     console.log('displaymode', this.displayMode);
 
     this.rerender();
   };
 
-  this.displayMode = 'Raw value';
+  this.displayMode = localStorage.getItem(this.localStorageDisplayKey) || 'Raw value';
+  el.querySelector('.displaymode').value = this.displayMode;
 
   this.rerender();
   return el;
@@ -49,10 +55,6 @@ window.DigitalOut.prototype.rerender = function() {
   var v = this.el.querySelector('.view');
 
   switch (this.displayMode) {
-    case 'Raw value':
-      v.innerHTML = `Pin ${this.pin} (DigitalOut) - <span class="value">${this.value}</span>`;
-      break;
-
     case 'LED':
       v.innerHTML = `
         <p>Pin ${this.pin} (DigitalOut) - <span class="value">${this.value}</span></p>
@@ -71,6 +73,11 @@ window.DigitalOut.prototype.rerender = function() {
       if (this.value === 1) {
         v.querySelector('img').style.opacity = 0.3;
       }
+      break;
+
+    case 'Raw value':
+    default:
+      v.innerHTML = `Pin ${this.pin} (DigitalOut) - <span class="value">${this.value}</span>`;
       break;
   }
 };
