@@ -39,8 +39,6 @@ window.DigitalOut.prototype.render = function() {
 
     localStorage.setItem(this.localStorageDisplayKey, this.displayMode);
 
-    console.log('displaymode', this.displayMode);
-
     this.rerender();
   };
 
