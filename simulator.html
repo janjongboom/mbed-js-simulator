@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>mbed.js simulator</title>
+  <style>
+    #model > div {
+      border: dotted 1px lightgray;
+      padding: 10px;
+      display: inline-block;
+      vertical-align: top;
+    }
+    .services p {
+      margin: 0;
+    }
+  </style>
+</head>
+<body>
+  <div id="model"></div>
+
+  <script src="/hal/pins.js"></script>
+  <script src="/hal/print.js"></script>
+  <script src="/hal/DigitalOut.js"></script>
+  <script src="/hal/InterruptIn.js"></script>
+  <script src="/hal/BLE.js"></script>
+  <script>
+    var targetProgram = '/example-program/';
+    var files = [
+      'blink.js',
+      'main.js'
+    ];
+
+    var components = [];
+
+    function loadFile(file) {
+      return new Promise(function(res, rej) {
+        var x = new XMLHttpRequest();
+        x.open('GET', file);
+        x.onload = function() {
+          if (x.status === 200) {
+            res(x.responseText);
+          }
+          else {
+            rej('status is ' + x.status);
+          }
+        };
+        x.onerror = err => rej(err);
+        x.send();
+      });
+    }
+
+    window.addComponent = function(component) {
+      components.push(component);
+
+      document.querySelector('#model').appendChild(component.render());
+    };
+
+    (async function app() {
+      var jsFiles = (await Promise.all(files.map(file => {
+        return loadFile(targetProgram + file);
+      }))).reduce((curr, content, ix) => {
+        curr['./' + files[ix]] = content;
+        return curr;
+      }, {});
+
+      var evaluatedFiles = {};
+
+      window.require = name => {
+        return evaluatedFiles[name];
+      };
+
+      for (let file of Object.keys(jsFiles)) {
+        let module = {};
+        new Function('return function(module) {' + jsFiles[file] + '}')()(module);
+
+        evaluatedFiles[file] = module.exports;
+      }
+    })();
+  </script>
+</body>
+</html>
